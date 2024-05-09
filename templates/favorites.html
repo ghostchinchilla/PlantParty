@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Your Favorite Plants</h1>
+    
+    {% if favorites and favorites|length > 0 %}
+        <ul class="favorite-list">
+            {% for favorite in favorites %}
+            <li>
+                <a href="{/plant_details', plant_id=favorite.plant.id }">
+                    {{ favorite.plant.plant_name }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No favorites found. Start adding some!</p>
+    {% endif %}
+</div>
+
+
+  {% endblock %}    

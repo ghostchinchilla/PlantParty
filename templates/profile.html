@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>{{ user.username }}'s Profile</h2>
+
+    <!-- Display User Information -->
+    <div>
+        <h3>Profile Information</h3>
+        <p><strong>Username:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+    </div>
+
+    <!-- Edit Profile -->
+    <!-- <div>
+        <h3>Edit Profile</h3>
+        <form method="POST" action="{{ url_for('update_profile', user_id=user.id) }}">
+            <div>
+                <label for="username">Username</label>
+                <input type="text" name="username" value="{{ user.username }}">
+            </div>
+            <div>
+                <label for="email">Email</label>
+                <input type="email" name="email" value="{{ user.email }}">
+            </div>
+            <button type="submit">Update Profile</button>
+        </form>
+    </div> -->
+
+    <!-- Display User's Plants -->
+    <div>
+        <h3>Your Plants</h3>
+        <ul>
+            {% for plant in user.plants %}
+                <li>{{ plant.plant_name }} - {{ plant.plant_type }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Display User's Favorite Plants -->
+    <div>
+        <h3>Your Favorite Plants</h3>
+        <ul>
+            {% for favorite in user.favorites %}
+                <li>{{ favorite.plant.plant_name }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Logout Button -->
+    <div>
+        <a href="/logout">Logout</a>
+    </div>
+{% endblock %}

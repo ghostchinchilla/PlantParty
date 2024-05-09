@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+<h1>Plant Care Guide</h1>
+
+{% if plant_care_guide %}
+    <p><strong>Care Task:</strong> {{ plant_care_guide.care_task }}</p>
+    <p><strong>Frequency:</strong> {{ plant_care_guide.frequency }}</p>
+    <p><strong>Details:</strong> {{ plant_care_guide.details }}</p>
+{% else %}
+    <p>No plant care guide found for this plant.</p>
+{% endif %}
+
+<a href="/base">Back to Home</a> <!-- Navigation link -->
+{% endblock %}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Plant Party</title>
+    <link rel="stylesheet" href="/static/style.css"> 
+</head>
+<body>
+    <header>
+        <h1>Welcome to Plant Party</h1>
+        <h3>Your one-stop solution for plant care and information</h3>
+        <nav>
+            <ul>
+                <li><a href="/plants">Explore Plants</a></li>
+                <li><a href="/favorites">View Your Favorite Plants</a></li>
+                <li><a href="/plant_care_guides">Plant Care Guides</a></li>
+                <li><a href="/plant_diseases">Learn About Plant Diseases</a></li>
+                {% if current_user.is_authenticated %}
+                    <li><a href="/logout">Logout</a></li>
+                {% else %}
+                    <li><a href="/login">Login</a></li>
+                    <li><a href="/register">Register</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}  <!-- Section for page-specific content -->
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Plant Party</p>
+    </footer>
+</body>
+</html>
+

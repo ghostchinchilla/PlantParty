@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %} 
+        
+        
+  <div class="container">
+    <h2>Login</h2>
+    <form action="/profile" method=['GET', 'POST']>
+      <label for="email">Email</label>
+       <input type="text" id="email" name="email" placeholder="Your email">
+
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" placeholder="Your username">
+          
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Your password">
+          
+      <input type="submit" value="Login">
+    </form>
+    <p>Don't have an account yet? <a href="/register">Sign up here</a>.</p>
+    </div>
+              
+
+  {% endblock %}    

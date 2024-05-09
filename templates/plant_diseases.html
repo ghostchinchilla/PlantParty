@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Plant Diseases</h2>
+    <ul>
+        {% for disease in diseases %}
+            <li>
+                <strong>{{ disease.name }}</strong>
+                <p>Symptoms: {{ disease.symptoms }}</p>
+                <p>Treatment: {{ disease.treatment }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
