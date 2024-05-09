@@ -41,34 +41,34 @@ def register():
         email = request.form.get('email')
         password = request.form.get('password')
         confirm_password = request.form.get('confirm-password')
-        bio = request.form.get('bio')
+        bio = request.form.get('bio', '')
 
-        # Validate form data and ensure passwords match
+        # Validate form data
         if not username or not email or not password:
             flash('Please fill in all required fields.', 'error')
             return render_template('register.html')
 
         if password != confirm_password:
-            flash('Passwords do not match. Please try again.', 'error')
+            flash('Passwords do not match.', 'error')
             return render_template('register.html')
 
-        # Hash the password for secure storage
+        # Hash password for secure storage
         hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
 
-        # Check if the username is unique
+        # Check for duplicate usernames
         if User.query.filter_by(username=username).first():
             flash('Username already exists. Choose another.', 'error')
             return render_template('register.html')
 
-        # Create a new user and add to the database
+        # Add the new user to the database
         new_user = User(username=username, email=email, password=hashed_password, bio=bio)
-        db.session.add(new_user)  # Add the user to the database
-        db.session.commit()  # Commit the transaction
+        db.session.add(new_user)
+        db.session.commit()
 
         flash('Registration successful! Please log in.', 'success')
-        return redirect(url_for('login'))  # Redirect to login page
+        return redirect(url_for('login'))  # Redirect to the login page
 
-    # Render the registration form for GET requests
+    # Render registration form for GET requests
     return render_template('register.html')
     
 
