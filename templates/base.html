@@ -4,13 +4,18 @@
     <meta charset="UTF-8">
     <title>Plant Party</title>
     <link rel="stylesheet" href="/static/style.css"> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bad+Script&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="context-wrapper">
     <header>
         <h1>Welcome to Plant Party</h1>
-        <h3>Your one-stop solution for plant care and information</h3>
+        <h3 id="unique-h3">Your one-stop solution for plant care and information</h3>
         <nav>
             <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
                 <li><a href="/plants">Explore Plants</a></li>
                 <li><a href="/favorites">View Your Favorite Plants</a></li>
                 <li><a href="/plant_care_guides">Plant Care Guides</a></li>
@@ -23,15 +28,21 @@
                 {% endif %}
             </ul>
         </nav>
+        <main>
+            <div class="features">
+
+            {% block content %}{% endblock %}  
+        </main>
+
+
     </header>
 
-    <main>
-        {% block content %}{% endblock %}  <!-- Section for page-specific content -->
-    </main>
+
 
     <footer>
-        <p>&copy; 2024 Plant Party</p>
+       <div class="footer"> <p>&copy; 2024 Plant Party</p> </div>
     </footer>
+</div>
 </body>
 </html>
 

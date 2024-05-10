@@ -1,10 +1,21 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2>Plant Types</h2>
-    <ul>
+    <h2>Plant List</h2>
+
+    <div class="plant-grid">
         {% for plant in plants %}
-            <li>{{ plant.common_name }} ({{ plant.scientific_name }})</li>
+            <div class="plant-card">
+                <h3>{{ plant.name }}</h3>
+                <p><i>{{ plant.scientific_name }}</i></p>
+                {% if plant.image_url %}
+                    <img src="{{ plant.image_url }}" alt="{{ plant.name }}" />
+                {% else %}
+                    <p>No image available</p>
+                {% endif %}
+            </div>
         {% endfor %}
-    </ul>
+    </div>
+
 {% endblock %}
+

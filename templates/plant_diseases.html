@@ -1,14 +1,21 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2>Plant Diseases</h2>
+<h2>Plant Diseases</h2>
+
+{% if diseases %}
     <ul>
         {% for disease in diseases %}
             <li>
-                <strong>{{ disease.name }}</strong>
-                <p>Symptoms: {{ disease.symptoms }}</p>
-                <p>Treatment: {{ disease.treatment }}</p>
+                <h2>{{ disease.name }}</h2>
+                <p><strong>Symptoms:</strong> {{ disease.symptoms }}</p>
+                <p><strong>Treatment:</strong> {{ disease.treatment }}</p>
             </li>
         {% endfor %}
     </ul>
+{% else %}
+    <p>No diseases found.</p>
+{% endif %}
+
 {% endblock %}
+

@@ -1,14 +1,23 @@
 {% extends 'base.html' %}
 
-<h1>Plant Care Guide</h1>
+{% block content %}
+<h1>Plant Care Guides</h1>
 
-{% if plant_care_guide %}
-    <p><strong>Care Task:</strong> {{ plant_care_guide.care_task }}</p>
-    <p><strong>Frequency:</strong> {{ plant_care_guide.frequency }}</p>
-    <p><strong>Details:</strong> {{ plant_care_guide.details }}</p>
+{% if plant_care_guides %}
+    <ul>
+        {% for guide in plant_care_guides %}
+            <li>
+                <strong>Plant:</strong> {{ guide.plant_name }}<br>
+                <strong>Task:</strong> {{ guide.care_task }}<br>
+                <strong>Frequency:</strong> {{ guide.frequency }}<br>
+                <strong>Details:</strong> {{ guide.details }}
+            </li>
+        {% endfor %}
+    </ul>
 {% else %}
-    <p>No plant care guide found for this plant.</p>
+    <p>No plant care guides found.</p>
 {% endif %}
 
-<a href="/base">Back to Home</a> <!-- Navigation link -->
+<a href="{{ url_for('index') }}">Back to Home</a> <!-- Navigation link -->
 {% endblock %}
+
