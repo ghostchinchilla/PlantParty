@@ -1,0 +1,47 @@
+from flask import Flask, render_template, redirect, request, url_for, flash, session
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
+import requests 
+import config
+
+import logging
+import os
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+app = Flask(__name__)
+
+app.config.from_object(config.Config)
+
+
+# Initialize database and other extensions
+db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+
+with app.app_context():
+    db.create_all()  # Create all defined tables
+
+# Only after initializing `db` do we import `User`
+from models import User, Plant, FavoritePlant, PlantCare, PlantDisease
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+# Create all tables in the current app context
+with app.app_context():
+    db.create_all()  # Create all defined tables  
+
+    //////////////////////////////////////////////////////////////////////////////////////
+
+    from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
+from flask_login import UserMixin
+from flask import Flask
+bcrypt = Bcrypt()
+db = SQLAlchemy()

@@ -1,21 +1,14 @@
 from flask import Flask, render_template, redirect, request, url_for, flash, session
-from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_bcrypt import Bcrypt
-import requests 
 import config
+import requests
+import psycopg2
 
-import logging
-import os
-
-# Configure logging
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
-
+# Create Flask app
 app = Flask(__name__)
-
 app.config.from_object(config.Config)
-
 
 # Initialize database and other extensions
 db = SQLAlchemy(app)
@@ -23,23 +16,22 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-with app.app_context():
-    db.create_all()  # Create all defined tables
-
-# Only after initializing `db` do we import `User`
+# Import models after initializing db to avoid circular imports
 from models import User, Plant, FavoritePlant, PlantCare, PlantDisease
 
+# Function to initialize or reinitialize the database
+def init_db():
+    with app.app_context():
+        db.drop_all()  # WARNING: This will erase all data
+        db.create_all()  # Creates tables based on model definitions
+
+# Call this function when initializing the database
+init_db()  # Comment out after initializing to avoid data loss
+
+# Define user loader for Flask-Login
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
-# Create all tables in the current app context
-with app.app_context():
-    db.create_all()  # Create all defined tables
-
-# @app.route('/index') 
-# def index_page():
-#     return render_template('index.html')  
 
 
 @app.route('/')
@@ -83,7 +75,13 @@ def register():
     # Render registration form for GET requests
     return render_template('register.html')
 
-
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()  # Ensure Flask-Login logs out the user
+    session.clear()  # Clear session data
+    # Redirect to the login page or another desired page after logging out
+    return redirect(url_for('login'))
     
 
 
@@ -100,20 +98,16 @@ def login():
         if user and bcrypt.checkpw(password.encode(), user.password):  # Check if the password matches
             login_user(user)  # Use Flask-Login to mark the user as logged in
             session['username'] = user.username  # Set session variable
-            return redirect(url_for('profile', username=user.username))  # Redirect to user profile
+            # return redirect(url_for('profile', username=user.username)) 
+            return redirect(url_for('profile', username=user.username))
+
         else:
             flash('Invalid username or password. Please try again.', 'error')
             return redirect(url_for('login'))  # Return with error message
 
     return render_template('login.html')  # Render login form for GET requests
 
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()  # Ensure Flask-Login logs out the user
-    session.clear()  # Clear session data
-    # Redirect to the login page or another desired page after logging out
-    return redirect(url_for('login'))
+
 
 @app.route('/profile/<username>', methods=['GET', 'POST'])
 def manage_profile(username):
@@ -158,20 +152,40 @@ def add_favorite(plant_id):
     return redirect(url_for('view_favorites'))
 
 @app.route('/plant_care_guides', methods=['GET'])
-# @login_required
 def plant_care():
-    plant_id = request.args.get("plant_id")  # Retrieve plant_id from query params
-    if not plant_id:
-        flash("Plant ID is required.", "error")
-        return redirect(url_for('plant_care_guides'))  # Redirect if plant_id is missing
+    plant_id = request.args.get("plant_id")
+
+    if not plant_id or not plant_id.isdigit():
+        flash("Invalid or missing Plant ID.", "error")
+        return redirect(url_for('index'))  # Redirect to a safe page
     
-    # API URL for fetching plant care guides
+    plant_id = int(plant_id)  # Convert to integer
+
+    # Fetch the care guide from the API or database
     api_url = f"https://perenual.com/api/species-care-guide/{plant_id}?key={config.Config.API_KEY}"
+    response = requests.get(api_url)
+
+    if response.status_code == 200:
+        plant_care_guide = response.json()
+        return render_template('plant_care.html', plant_care_guide=plant_care_guide)
+    else:
+        flash("Could not fetch the plant care guide. Please try again.", "error")
+        return redirect(url_for('index'))  # Redirect if the request fails
     
+
+    @app.route('/plant_care/<int:plant_id>', methods=['GET'])
+    def plant_care(plant_id):
+    # API URL to fetch plant care guide based on plant_id
+        api_url = f"https://perenual.com/api/species-care-guide/{plant_id}?key={API_KEY}"
+
     response = requests.get(api_url)
     if response.status_code == 200:
-            plant_care_guide = response.json()  # Parse the JSON response
-            return render_template('plant_care.html', plant_care_guide=plant_care_guide)  # Pass data to template
+        plant_care_guide = response.json()  # Parse the JSON response
+        return render_template('plant_care.html', plant_care_guide=plant_care_guide)  # Render with care guide
+    else:
+        flash("Failed to retrieve plant care guide.", "error")
+        return redirect(url_for('show_plants'))  # Redirect to plant list on failure
+
 
 
 @app.route('/plant_diseases', methods=['GET'])
